@@ -1,100 +1,87 @@
 'use client';
-import { useState } from 'react';
-import { Image, Video, Music, Search, Filter } from 'lucide-react';
-
-interface MediaAsset {
-  id: string;
-  type: 'image' | 'video' | 'music';
-  name: string;
-  url: string;
-  thumbnail?: string;
-  duration?: string;
-  tags: string[];
-}
+import { useState, useEffect } from 'react';
+import { Image, Video, Music, Search, Filter, Loader2 } from 'lucide-react';
+import { MediaAsset } from '@/lib/types';
 
 interface MediaAssetBrowserProps {
   variant?: 'images' | 'videos' | 'music';
   onSelect?: (asset: MediaAsset) => void;
 }
 
-const mockAssets: MediaAsset[] = [
-  {
-    id: '1',
-    type: 'image',
-    name: 'Cyber City Skyline',
-    url: '/assets/cyber-city.jpg',
-    thumbnail: '/assets/cyber-city-thumb.jpg',
-    tags: ['cyberpunk', 'city', 'neon', 'futuristic']
-  },
-  {
-    id: '2',
-    type: 'video',
-    name: 'Digital Particles',
-    url: '/assets/particles.mp4',
-    thumbnail: '/assets/particles-thumb.jpg',
-    duration: '0:15',
-    tags: ['particles', 'digital', 'abstract', 'motion']
-  },
-  {
-    id: '3',
-    type: 'music',
-    name: 'Synthwave Beat',
-    url: '/assets/synthwave.mp3',
-    duration: '2:30',
-    tags: ['synthwave', 'electronic', 'retro', 'upbeat']
-  },
-  {
-    id: '4',
-    type: 'image',
-    name: 'Neon Grid',
-    url: '/assets/neon-grid.jpg',
-    thumbnail: '/assets/neon-grid-thumb.jpg',
-    tags: ['grid', 'neon', 'geometric', 'pattern']
-  },
-  {
-    id: '5',
-    type: 'video',
-    name: 'Code Rain',
-    url: '/assets/code-rain.mp4',
-    thumbnail: '/assets/code-rain-thumb.jpg',
-    duration: '0:10',
-    tags: ['code', 'matrix', 'digital', 'rain']
-  },
-  {
-    id: '6',
-    type: 'music',
-    name: 'Ambient Tech',
-    url: '/assets/ambient-tech.mp3',
-    duration: '3:45',
-    tags: ['ambient', 'tech', 'atmospheric', 'calm']
-  }
-];
-
 export function MediaAssetBrowser({ variant = 'images', onSelect }: MediaAssetBrowserProps) {
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState<'all' | 'image' | 'video' | 'music'>('all');
+  const [assets, setAssets] = useState<MediaAsset[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const filteredAssets = mockAssets.filter(asset => {
-    const matchesSearch = asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         asset.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+  useEffect(() => {
+    const fetchAssets = async () => {
+      try {
+        const typeParam = variant === 'images' ? 'image' :
+                         variant === 'videos' ? 'video' :
+                         variant === 'music' ? 'music' : undefined;
+
+        const url = typeParam ? `/api/media?type=${typeParam}` : '/api/media';
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.success) {
+          setAssets(data.data);
+        } else {
+          setError(data.error || 'Failed to load media assets');
+        }
+      } catch (err) {
+        setError('Failed to load media assets');
+        console.error('Error fetching media assets:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAssets();
+  }, [variant]);
+
+  const filteredAssets = assets.filter(asset => {
+    const matchesSearch = asset.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         asset.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesFilter = activeFilter === 'all' || asset.type === activeFilter;
-    const matchesVariant = variant === 'images' ? asset.type === 'image' :
-                          variant === 'videos' ? asset.type === 'video' :
-                          variant === 'music' ? asset.type === 'music' : true;
-    
-    return matchesSearch && matchesFilter && matchesVariant;
+
+    return matchesSearch && matchesFilter;
   });
 
   const handleSelect = (asset: MediaAsset) => {
-    const isSelected = selectedAssets.includes(asset.id);
+    const isSelected = selectedAssets.includes(asset.assetId);
     if (isSelected) {
-      setSelectedAssets(prev => prev.filter(id => id !== asset.id));
+      setSelectedAssets(prev => prev.filter(id => id !== asset.assetId));
     } else {
-      setSelectedAssets(prev => [...prev, asset.id]);
+      setSelectedAssets(prev => [...prev, asset.assetId]);
     }
     onSelect?.(asset);
   };
+
+  if (loading) {
+    return (
+      <div className="cyber-card p-6">
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
+          <span className="ml-2 text-text-secondary">Loading media assets...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="cyber-card p-6">
+        <div className="text-center py-12">
+          <div className="text-red-400 mb-2">Failed to load media assets</div>
+          <div className="text-text-secondary text-sm">{error}</div>
+        </div>
+      </div>
+    );
+  }
 
   const getAssetIcon = (type: MediaAsset['type']) => {
     switch (type) {
@@ -148,29 +135,25 @@ export function MediaAssetBrowser({ variant = 'images', onSelect }: MediaAssetBr
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredAssets.map((asset) => (
           <div
-            key={asset.id}
+            key={asset.assetId}
             onClick={() => handleSelect(asset)}
             className={`relative cursor-pointer cyber-border p-3 hover:shadow-neon transition-all duration-200 ${
-              selectedAssets.includes(asset.id) ? 'shadow-cyber bg-accent bg-opacity-20' : 'bg-surface'
+              selectedAssets.includes(asset.assetId) ? 'shadow-cyber bg-accent bg-opacity-20' : 'bg-surface'
             }`}
           >
             {/* Asset Preview */}
             <div className="aspect-square bg-bg mb-3 flex items-center justify-center cyber-border">
-              {asset.thumbnail ? (
-                <img 
-                  src={asset.thumbnail} 
-                  alt={asset.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="text-accent">
-                  {getAssetIcon(asset.type)}
-                </div>
-              )}
-              
-              {asset.duration && (
-                <div className="absolute top-2 right-2 bg-bg bg-opacity-80 px-2 py-1 text-xs font-mono">
-                  {asset.duration}
+              <img
+                src={asset.url}
+                alt={asset.title || 'Media asset'}
+                className="w-full h-full object-cover"
+              />
+
+              {/* For music/video assets, show duration if available */}
+              {asset.type === 'music' && (
+                <div className="absolute bottom-2 right-2 bg-bg bg-opacity-80 px-2 py-1 text-xs font-mono">
+                  <Music className="w-3 h-3 inline mr-1" />
+                  Music
                 </div>
               )}
             </div>
@@ -181,19 +164,19 @@ export function MediaAssetBrowser({ variant = 'images', onSelect }: MediaAssetBr
                 <div className="text-accent">
                   {getAssetIcon(asset.type)}
                 </div>
-                <h4 className="text-sm font-medium text-fg truncate">{asset.name}</h4>
+                <h4 className="text-sm font-medium text-fg truncate">{asset.title || 'Untitled'}</h4>
               </div>
-              
+
               <div className="flex flex-wrap gap-1">
-                {asset.tags.slice(0, 2).map((tag) => (
-                  <span 
+                {asset.tags?.slice(0, 2).map((tag) => (
+                  <span
                     key={tag}
                     className="text-xs bg-surface px-2 py-1 cyber-border text-text-secondary"
                   >
                     {tag}
                   </span>
                 ))}
-                {asset.tags.length > 2 && (
+                {asset.tags && asset.tags.length > 2 && (
                   <span className="text-xs text-text-secondary">
                     +{asset.tags.length - 2}
                   </span>
@@ -202,7 +185,7 @@ export function MediaAssetBrowser({ variant = 'images', onSelect }: MediaAssetBr
             </div>
 
             {/* Selection Indicator */}
-            {selectedAssets.includes(asset.id) && (
+            {selectedAssets.includes(asset.assetId) && (
               <div className="absolute top-2 left-2 w-4 h-4 bg-accent rounded-full flex items-center justify-center">
                 <div className="w-2 h-2 bg-bg rounded-full"></div>
               </div>

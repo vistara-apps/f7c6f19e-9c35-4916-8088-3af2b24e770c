@@ -3,13 +3,22 @@
 @tailwind utilities;
 
 :root {
-  /* Default cyberpunk gaming theme */
-  --color-bg: 26, 13, 46; /* Dark purple */
-  --color-fg: 255, 255, 255; /* White text */
-  --color-accent: 0, 255, 65; /* Neon green */
-  --color-surface: 22, 33, 62; /* Cyber blue */
-  --color-text-primary: 255, 255, 255;
-  --color-text-secondary: 200, 200, 200;
+  /* BlockVideo Design System - Based on spec */
+  --color-primary: 222, 88%, 57%; /* hsl(222, 88%, 57%) */
+  --color-accent: 340, 90%, 60%; /* hsl(340, 90%, 60%) */
+  --color-bg: 222, 15%, 96%; /* hsl(222, 15%, 96%) */
+  --color-surface: 0, 0%, 100%; /* hsl(0, 0%, 100%) */
+  --color-text-primary: 222, 15%, 15%; /* hsl(222, 15%, 15%) */
+  --color-text-secondary: 222, 15%, 30%; /* hsl(222, 15%, 30%) */
+
+  /* Additional design tokens */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 20px;
+  --shadow-card: 0 8px 24px hsla(222, 15%, 20%, 0.12);
 }
 
 [data-theme="celo"] {
