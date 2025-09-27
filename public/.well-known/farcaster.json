@@ -1,0 +1,30 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "frame": {
+    "version": "1",
+    "name": "BlockVideo",
+    "subtitle": "Built with Zara",
+    "description": "BlockVideo is a Base Mini App built with Zara.",
+    "iconUrl": "https://0co.to/images/zara-2.png",
+    "homeUrl": "https://f7c6f19e9c35491680883af2b24e770c-zsto.vercel.app",
+    "splashImageUrl": "https://f7c6f19e9c35491680883af2b24e770c-zsto.vercel.app/splash.png",
+    "splashBackgroundColor": "#000000",
+    "heroImageUrl": "https://f7c6f19e9c35491680883af2b24e770c-zsto.vercel.app/image.png",
+    "tagline": "BlockVideo",
+    "screenshotUrls": [
+      "https://f7c6f19e9c35491680883af2b24e770c-zsto.vercel.app/screenshot.png",
+      "https://f7c6f19e9c35491680883af2b24e770c-zsto.vercel.app/screenshot.png"
+    ],
+    "primaryCategory": "social",
+    "tags": [
+      "base",
+      "miniapp",
+      "onchainkit"
+    ],
+    "webhookUrl": "https://f7c6f19e9c35491680883af2b24e770c-zsto.vercel.app/api/webhook"
+  }
+}
