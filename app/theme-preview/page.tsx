@@ -55,7 +55,10 @@ export default function ThemePreview() {
           <div className="space-y-6">
             <h2 className="text-xl font-semibold text-fg">Components Preview</h2>
             
-            <CreditBalanceDisplay variant="large" userId="preview" />
+            <CreditBalanceDisplay
+              variant="large"
+              user={{ userId: 'preview', walletAddress: '0x123...', creditsBalance: 25, creationDate: new Date().toISOString() }}
+            />
             
             <IPStatusIndicator 
               variant="registered"
