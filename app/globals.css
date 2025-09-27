@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Default cyberpunk gaming theme */
+  --color-bg: 26, 13, 46; /* Dark purple */
+  --color-fg: 255, 255, 255; /* White text */
+  --color-accent: 0, 255, 65; /* Neon green */
+  --color-surface: 22, 33, 62; /* Cyber blue */
+  --color-text-primary: 255, 255, 255;
+  --color-text-secondary: 200, 200, 200;
+}
+
+[data-theme="celo"] {
+  --color-bg: 0, 0, 0;
+  --color-fg: 255, 255, 255;
+  --color-accent: 251, 204, 92;
+  --color-surface: 20, 20, 20;
+  --color-text-primary: 255, 255, 255;
+  --color-text-secondary: 180, 180, 180;
+}
+
+[data-theme="solana"] {
+  --color-bg: 25, 15, 45;
+  --color-fg: 255, 255, 255;
+  --color-accent: 220, 38, 127;
+  --color-surface: 35, 25, 55;
+  --color-text-primary: 255, 255, 255;
+  --color-text-secondary: 200, 180, 220;
+}
+
+[data-theme="base"] {
+  --color-bg: 15, 23, 42;
+  --color-fg: 248, 250, 252;
+  --color-accent: 0, 82, 255;
+  --color-surface: 30, 41, 59;
+  --color-text-primary: 248, 250, 252;
+  --color-text-secondary: 203, 213, 225;
+}
+
+[data-theme="coinbase"] {
+  --color-bg: 10, 15, 30;
+  --color-fg: 248, 250, 252;
+  --color-accent: 0, 82, 255;
+  --color-surface: 20, 25, 40;
+  --color-text-primary: 248, 250, 252;
+  --color-text-secondary: 203, 213, 225;
+}
+
+@layer base {
+  * {
+    @apply border-gray-700;
+  }
+  
+  body {
+    @apply bg-bg text-fg font-mono;
+    background: linear-gradient(135deg, hsl(var(--color-bg)) 0%, hsl(var(--color-surface)) 100%);
+    min-height: 100vh;
+  }
+
+  .cyber-border {
+    border: 2px solid hsl(var(--color-accent));
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  }
+
+  .cyber-card {
+    @apply bg-surface border-2 border-accent cyber-border p-4;
+    background: linear-gradient(135deg, hsl(var(--color-surface) / 0.8) 0%, hsl(var(--color-bg) / 0.9) 100%);
+    backdrop-filter: blur(10px);
+  }
+
+  .neon-text {
+    color: hsl(var(--color-accent));
+    text-shadow: 0 0 10px hsl(var(--color-accent) / 0.5);
+  }
+
+  .glass-card {
+    @apply bg-surface bg-opacity-20 backdrop-blur-md border border-accent border-opacity-30;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-accent text-bg px-6 py-3 font-bold uppercase tracking-wider cyber-border hover:shadow-neon transition-all duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent border-2 border-accent text-accent px-6 py-3 font-bold uppercase tracking-wider cyber-border hover:bg-accent hover:text-bg transition-all duration-200;
+  }
+
+  .input-cyber {
+    @apply bg-surface border-2 border-accent cyber-border px-4 py-2 text-fg placeholder-text-secondary focus:shadow-neon outline-none;
+  }
+
+  .metric-card {
+    @apply glass-card p-6 hover:bg-opacity-30 transition-all duration-200;
+  }
+
+  .video-template-card {
+    @apply cyber-card hover:shadow-cyber transition-all duration-200 cursor-pointer;
+  }
+
+  .progress-bar {
+    @apply bg-surface border border-accent cyber-border overflow-hidden;
+  }
+
+  .progress-fill {
+    @apply bg-accent h-full transition-all duration-300;
+    box-shadow: 0 0 10px hsl(var(--color-accent) / 0.5);
+  }
+}
